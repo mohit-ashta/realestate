@@ -94,7 +94,7 @@ const UserInfoList = () => {
                         {users.map((user: any, index: number) => (
                             <tr className="border-b border-b-[#353535] text-admin-color2"
                                 key={user.id}>
-                                <td className="px-5 py-2">{index + 1}</td>
+                                <td className="px-5 py-2">{indexOfFirstUser +index+ 1}</td>
                                 <td className="px-5 py-2">{user.name}</td>
                                 <td className="px-5 py-2">{user.email}</td>
                                 <td className="px-5 py-2">{user.role}</td>
@@ -116,7 +116,7 @@ const UserInfoList = () => {
                             </tr>
                         ))}
                     </table>
-                    {/* <div className="pagination mt-6">
+                    <div className="pagination mt-6">
                         <ul className="flex gap-4">
                             <li className="bg-greyish px-3 rounded text-white">
                                 <button onClick={() => paginate("prev")}>Previous</button>
@@ -125,8 +125,8 @@ const UserInfoList = () => {
                                 length: Math.ceil(users.length / resultPerPage),
                             }).map((_, index) => (
                                 <li key={index}>
-                                    <button onClick={() => paginate(index + 1)}>
-                                        {index + 1}
+                                    <button onClick={() => paginate(index + 1)} className="text-white">
+                                        {currentPage}
                                     </button>
                                 </li>
                             ))}
@@ -134,7 +134,7 @@ const UserInfoList = () => {
                                 <button onClick={() => paginate("next")}>Next</button>
                             </li>
                         </ul>
-                    </div> */}
+                    </div>
                 </div>
             </section>
         </Layout>

@@ -2,10 +2,10 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 
-const getHomeList = async () => {
+const getHomeList = async (page: any) => {
   try {
     const response = await axios.get(
-      `http://localhost:4000/api/v1/home/list`,
+      `http://localhost:4000/api/v1/home/list?page=${page}`,
       {
         headers: {
           "Content-type": "application/json",
@@ -20,6 +20,6 @@ const getHomeList = async () => {
   }
 };
 
-export const useGetHomeList = () => {
-  return useQuery("listHomes", getHomeList);
+export const useGetHomeList = (page: any) => {
+  return useQuery(["listHomes", page], () => getHomeList(page));
 };

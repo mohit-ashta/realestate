@@ -19,7 +19,12 @@ const Header = () => {
   const [token, setToken] = useState("");
   const { user } = useUser();
   const nonAdminRoutes = ["/", "/user/property-list", "/about"];
-  const AdminRole = user?.role === "admin" && !nonAdminRoutes.includes(router.pathname);
+    const nonAdminRoutesPattern = /^\/user\/property-list\//;
+
+    const isAdminRoute =
+        user?.role === "admin" &&
+        !nonAdminRoutes.includes(router.pathname) &&
+        !nonAdminRoutesPattern.test(router.pathname);
 
   const handleShowLogin = () => {
     setShowLogin(true);
@@ -48,15 +53,15 @@ const Header = () => {
 
   return (
     <div>
-      <header className={`body-font shadow-b-xl border-b relative ${AdminRole ? "text-admin-color2 bg-secondary border-b-[#353535]" : "text-gray-600 bg-white"}`}>
+      <header className={`body-font shadow-b-xl border-b relative ${isAdminRoute ? "text-admin-color2 bg-secondary border-b-[#353535]" : "text-gray-600 bg-white"}`}>
         <div className="container flex flex-wrap py-5 flex-col md:flex-row items-center justify-between gap-3">
           <Logo width={250} height={33} />
-          {AdminRole ? "" : (<nav className="flex justify-center flex-wrap items-center text-base lg:gap-8 gap-3" >
+          {isAdminRoute ? "" : (<nav className="flex justify-center flex-wrap items-center text-base lg:gap-8 gap-3" >
             {HeaderMenuTab.find((tab) => tab.role === user?.role)?.tabs.map((item: any, idx: number) => <HeaderMenuItem key={idx} title={item.title} link={item.link} />)}
           </nav>)}
           <div className="flex gap-4 items-center">
             {token ?
-              <button onClick={handleLogout} className={`text-base uppercase font-medium flex gap-1 items-center ${AdminRole ? "text-white" : "text-black"}`}><span><IoIosLogOut size={20} /></span>Logout</button>
+              <button onClick={handleLogout} className={`text-base uppercase font-medium flex gap-1 items-center ${isAdminRoute ? "text-white" : "text-black"}`}><span><IoIosLogOut size={20} /></span>Logout</button>
               :
               <CommonModal
                 buttonText="login"

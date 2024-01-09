@@ -1,6 +1,6 @@
 "use client";
 import { useDeleteHome } from "@/api/mutations/delete-home";
-import { useGetHomeList } from "@/api/query";
+
 import SmallLoader from "@/components/molecules/loader/loader";
 import PageNotFound from "@/components/molecules/page-not-found";
 import { useEffect, useState } from "react";
@@ -22,8 +22,19 @@ import { useAddNewProfileHome } from "@/api/mutations/add-new-home";
 import { validateSchema } from "@/validation-schema";
 import { AiOutlineClose } from "react-icons/ai";
 import Modal from "react-modal";
+import { useGetHomeList } from "@/api/query";
+import { useGetUserInfoList } from "@/api/query/get-user-info";
+import { BsBuildings } from "react-icons/bs";
 
 export const NewHome = () => {
+  useAuth({
+    allowedRoles: SYSTEM_ROLES?.ADMIN,
+    path: AdminRoutes?.DASHBOARD?.absolutePath,
+  });
+  const router = useRouter();
+
+  const resultPerHomePage = 2;
+
   const customStyles = {
     content: {
       top: "50%",
@@ -36,17 +47,14 @@ export const NewHome = () => {
       border: "none",
       zIndex: "50",
       padding: "50px",
-      background: "rgb(40 40 40)",    },
+      background: "rgb(40 40 40)",
+    },
   };
-  useAuth({
-    allowedRoles: SYSTEM_ROLES?.ADMIN,
-    path: AdminRoutes?.DASHBOARD?.absolutePath,
-  });
-  const router = useRouter();
 
   const [show, setShow] = useState(false);
   const [token, setToken] = useState("");
-
+  const [currentPages, setCurrentPages] = useState(1);
+  const [currentUserPages, setCurrentUserPages] = useState(1);
   const methods = useForm({ resolver: yupResolver(validateSchema) });
 
   const {
@@ -60,8 +68,9 @@ export const NewHome = () => {
 
   // #### all mutate
   const { mutate: addNewProducts, isLoading: Loading } = useAddNewProfileHome();
-  const { data, isLoading, error, refetch } = useGetHomeList();
+  const { data, isLoading, error, refetch } = useGetHomeList(currentPages);
   const { mutate: deleteHome, isLoading: deleteLoading } = useDeleteHome();
+  const { data: dataUser } = useGetUserInfoList(currentUserPages);
 
   // #### all Create home
   const onSubmit = async (data: any) => {
@@ -75,7 +84,7 @@ export const NewHome = () => {
       };
 
       addNewProducts(homeData);
-      router.push(AdminRoutes.DASHBOARD.absolutePath);
+      setShow(false);
     } catch (error) {
       console.error("Error adding new home:", error);
     }
@@ -103,13 +112,6 @@ export const NewHome = () => {
     reset();
   };
 
-  //    ######## for get token  #######
-  useEffect(() => {
-    const tokenExist = localStorage.getItem("token");
-    if (tokenExist) {
-      setToken(tokenExist);
-    }
-  }, []);
   if (isLoading) {
     return (
       <div>
@@ -126,10 +128,27 @@ export const NewHome = () => {
     );
   }
 
-  console.log("router.query.home_id", router.query);
+  const homes = data?.homePerPage || [];
+  console.log(homes);
+  console.log(homes);
 
-  const homes = data?.buyHome || []; 
-  console.log(homes)
+  const indexOfLastHome = currentPages * resultPerHomePage;
+  const indexOfFirstHome = indexOfLastHome - resultPerHomePage;
+
+  const pagination = (action: string | number) => {
+    if (action === "prev") {
+      setCurrentPages((prevPage) => Math.max(prevPage - 1, 1));
+    } else if (action === "next") {
+      setCurrentPages((prevPage) =>
+        Math.min(prevPage + 1, Math.ceil(data?.homeCount / resultPerHomePage))
+      );
+    } else {
+      setCurrentPages(
+        typeof action === "string" ? parseInt(action, 10) : action
+      );
+    }
+  };
+
   return (
     <section className="create-home">
       <div className="wrapper">
@@ -137,8 +156,17 @@ export const NewHome = () => {
           <h1 className="sm:text-3xl text-2xl font-medium title-font text-admin-color">
             Admin Dashboard
           </h1>
-          <Modal isOpen={show} style={customStyles} onRequestClose={handleCancelModal}>
-          <button onClick={handleCancelModal} className="flex justify-end w-full"><AiOutlineClose size={20} color="#708096" /></button>
+          <Modal
+            isOpen={show}
+            style={customStyles}
+            onRequestClose={handleCancelModal}
+          >
+            <button
+              onClick={handleCancelModal}
+              className="flex justify-end w-full"
+            >
+              <AiOutlineClose size={20} color="#708096" />
+            </button>
             <div className="flex flex-col items-center justify-center rounded">
               <div className="text-right w-full"></div>
               <div>
@@ -219,7 +247,10 @@ export const NewHome = () => {
                         </div>
                         <div className="mb-4">
                           <label className="block text-admin-color font-medium mb-1">
-                            Size <small>(ft<sup>2</sup>)</small>
+                            Size{" "}
+                            <small>
+                              (ft<sup>2</sup>)
+                            </small>
                           </label>
                           <input
                             type="number"
@@ -380,16 +411,12 @@ export const NewHome = () => {
                         </div>
                       </div>
                       <div className="flex items-center lg:justify-end  justify-start">
-                          <button
-                            type="submit"
-                            className="text-admin-color2 text-base font-medium flex gap-1 items-center bg-[#313131] py-3 px-5 rounded focus:outline-none focus:shadow-outline mt-5"
-                          >
-                            {isLoading ? (
-                              <SmallLoader />
-                            ) : (
-                              <>Create Home</>
-                            )}
-                          </button>
+                        <button
+                          type="submit"
+                          className="text-admin-color2 text-base font-medium flex gap-1 items-center bg-[#313131] py-3 px-5 rounded focus:outline-none focus:shadow-outline mt-5"
+                        >
+                          {isLoading ? <SmallLoader /> : <>Create Home</>}
+                        </button>
                       </div>
                     </div>
                   </form>
@@ -407,34 +434,75 @@ export const NewHome = () => {
             </button>
           </div>
         </div>
-
+        <div className="grid grid-cols-3 items-center ">
+          <div className="border bg-[#434343] py-3 m-4 text-white text-center items-center rounded-xl flex justify-around h-40 ">
+            <div><BsBuildings size="42" /></div>
+            <div>
+              <div className="text-xl ">Available Properties</div>{" "}
+              <div className="text-3xl text-start pt-3">{data.homeCount}</div>
+            </div>
+          </div>
+          <div className="border  bg-[#434343] py-3 m-4 text-white text-center items-center rounded-xl flex justify-around h-40">
+          <div><BsBuildings size="42" /></div>
+            <div>
+              <div className="text-xl ">Available Properties</div>{" "}
+              <div className="text-3xl text-start pt-3">
+                <sub>{dataUser?.userCount} </sub>
+              </div>
+            </div>
+          </div>
+          <div className="border bg-[#434343] py-3 m-4 text-white text-center  items-center rounded-xl flex justify-around h-40">
+          <div><BsBuildings size="42" /></div>
+            <div>
+              <div className="text-xl ">Available Properties</div>{" "}
+              <div className="text-3xl text-start pt-3">{data.homeCount}</div>
+            </div>
+          </div>
+        </div>
         {homes.length < 1 ? (
           <div className="grid  grid-cols place-items-center items-center text-admin-color2 h-52">
             There is no Property🥺 , Please Create New Property🏢
           </div>
         ) : (
+          <>
             <table className="table-fixed w-full text-white home-lists border border-[#353535]">
               <tr className="border-b border-b-[#353535] text-admin-color2">
-                <th className="text-left px-5 py-4 bg-[#313131] w-[10%]">Sr. No.</th>
-                <th className="text-left px-5 py-4 bg-[#313131] w-[40%]">Name</th>
-                <th className="text-left px-5 py-4 bg-[#313131] w-[15%]">Price</th>
-                <th className="text-left px-5 py-4 bg-[#313131] w-[25%]">Location</th>
-                <th className="text-center px-5 py-4 bg-[#313131] w-[10%]">Actions</th>
+                <th className="text-left px-5 py-4 bg-[#313131] w-[10%]">
+                  Sr. No.
+                </th>
+                <th className="text-left px-5 py-4 bg-[#313131] w-[40%]">
+                  Name
+                </th>
+                <th className="text-left px-5 py-4 bg-[#313131] w-[15%]">
+                  Price
+                </th>
+                <th className="text-left px-5 py-4 bg-[#313131] w-[25%]">
+                  Location
+                </th>
+                <th className="text-center px-5 py-4 bg-[#313131] w-[10%]">
+                  Actions
+                </th>
               </tr>
               {homes &&
-                homes.map((home: any, idx:number) => (
-                  <tr className="border-b border-b-[#353535] text-admin-color2"
-                    key={home._id}>
-                    <td className="px-5 py-2">{idx + 1}</td>
+                homes.map((home: any, idx: number) => (
+                  <tr
+                    className="border-b border-b-[#353535] text-admin-color2"
+                    key={home._id}
+                  >
+                    <td className="px-5 py-2">{indexOfFirstHome + idx + 1}</td>
                     <td className="px-5 py-2">{home.name}</td>
-                    <td className="px-5 py-2">&#8377; <span>{home.price.toLocaleString()}</span></td>
+                    <td className="px-5 py-2">
+                      &#8377; <span>{home.price.toLocaleString()}</span>
+                    </td>
                     <td className="px-5 py-2">{home.address}</td>
                     <td className="px-5 py-2">
                       <ul className="flex gap-4 justify-center">
-                        <li>  
+                        <li>
                           <RiEditLine
                             onClick={() =>
-                              router.push(`/admin/home-details/${home._id}/edit`)
+                              router.push(
+                                `/admin/home-details/${home._id}/edit`
+                              )
                             }
                             className="cursor-pointer"
                             size={20}
@@ -442,12 +510,8 @@ export const NewHome = () => {
                           />
                         </li>
                         <li>
-                          <Link
-                            href={`home-details/${home._id}`}
-                          >
-                            <SlEye
-                              size={20}
-                            />
+                          <Link href={`home-details/${home._id}`}>
+                            <SlEye size={20} />
                           </Link>
                         </li>
                         <li>
@@ -455,10 +519,7 @@ export const NewHome = () => {
                             className="cursor-pointer"
                             onClick={() => handleDelete(home)}
                           >
-                            <RiDeleteBin6Line
-                              size={20}
-                              color="#FF0000"
-                            />
+                            <RiDeleteBin6Line size={20} color="#FF0000" />
                           </button>
                         </li>
                       </ul>
@@ -466,6 +527,30 @@ export const NewHome = () => {
                   </tr>
                 ))}
             </table>
+
+            <div className="pagination mt-6">
+              <ul className="flex gap-4">
+                <li className="bg-greyish px-3 rounded text-white">
+                  <button onClick={() => pagination("prev")}>Previous</button>
+                </li>
+                {Array.from({
+                  length: Math.ceil(homes.length / resultPerHomePage),
+                }).map((_, index) => (
+                  <li key={index}>
+                    <button
+                      onClick={() => pagination(index + 1)}
+                      className="text-white"
+                    >
+                      {currentPages}
+                    </button>
+                  </li>
+                ))}
+                <li className="bg-greyish px-3 rounded text-white">
+                  <button onClick={() => pagination("next")}>Next</button>
+                </li>
+              </ul>
+            </div>
+          </>
         )}
       </div>
     </section>

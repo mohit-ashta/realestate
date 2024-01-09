@@ -9,7 +9,12 @@ export const Logo: React.FC<LogoProps> = ({ width, height }) => {
     const router = useRouter();
     const { user } = useUser();
     const nonAdminRoutes = ["/", "/user/property-list", "/about"];
-    const AdminRole = user?.role === "admin" && !nonAdminRoutes.includes(router.pathname);
+    const nonAdminRoutesPattern = /^\/user\/property-list\//;
+
+    const isAdminRoute =
+        user?.role === "admin" &&
+        !nonAdminRoutes.includes(router.pathname) &&
+        !nonAdminRoutesPattern.test(router.pathname);
     return (
         <a
             href={UserRoutes.HOME.absolutePath}
@@ -20,7 +25,7 @@ export const Logo: React.FC<LogoProps> = ({ width, height }) => {
                 width={width}
                 height={height}
                 alt="logo"
-                className={`cursor-pointer ${AdminRole ? "invert" : ""}`}
+                className={`cursor-pointer ${isAdminRoute ? "invert" : ""}`}
                 priority
             />
         </a>
