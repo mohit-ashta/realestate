@@ -47,7 +47,7 @@ export const validateSchema = Yup.object().shape({
           return result;
       }),
       
-  // images: Yup.mixed().required("Media is required"),
+  images: Yup.mixed(),
 });
 
 export const loginSchema = Yup.object().shape({
