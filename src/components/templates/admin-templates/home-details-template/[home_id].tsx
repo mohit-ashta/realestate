@@ -1,7 +1,4 @@
-// pages/homes/[home_id].tsx
-
 import { useRouter } from "next/router";
-// Create this hook for fetching a single home's details
 import Layout from "@/components/organisms/layout";
 import { useGetSingleList } from "@/api/query/get-single-list";
 import { useEffect } from "react";

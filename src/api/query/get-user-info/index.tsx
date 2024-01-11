@@ -30,5 +30,6 @@ const getUserInfoList = async (page: any) => {
 };
 
 export const useGetUserInfoList = (page: any) => {
-  return useQuery(["listHomes", page], () => getUserInfoList(page));
-};
+  return useQuery([ page], () => getUserInfoList(page));
+}; 
+

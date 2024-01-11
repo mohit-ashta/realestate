@@ -37,6 +37,7 @@ const uploadMedia = async (addNewHome: NewHomeProps) => {
       data: formData,
     };
     const { data } = await axios(reqOptions);
+    toast.success(data.message);
     return data;
   } catch (error) {
     const axiosError = error as AxiosError<ErrorResponse>;

@@ -25,6 +25,10 @@ import Modal from "react-modal";
 import { useGetHomeList } from "@/api/query";
 import { useGetUserInfoList } from "@/api/query/get-user-info";
 import { BsBuildings } from "react-icons/bs";
+import { HiUsers } from "react-icons/hi2";
+import { MdOtherHouses, MdOutlineNavigateNext } from "react-icons/md";
+import Image from "next/image";
+import Tooltip from "@/components/atoms/tooltip";
 
 export const NewHome = () => {
   useAuth({
@@ -33,7 +37,7 @@ export const NewHome = () => {
   });
   const router = useRouter();
 
-  const resultPerHomePage = 2;
+  const resultPerHomePage = 6;
 
   const customStyles = {
     content: {
@@ -50,19 +54,21 @@ export const NewHome = () => {
       background: "rgb(40 40 40)",
     },
   };
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedImageFiles, setSelectedImageFiles] = useState([]);
 
   const [show, setShow] = useState(false);
-  const [token, setToken] = useState("");
   const [currentPages, setCurrentPages] = useState(1);
   const [currentUserPages, setCurrentUserPages] = useState(1);
-  const methods = useForm({ resolver: yupResolver(validateSchema) });
+
+  const methods = useForm({
+    resolver: yupResolver(validateSchema),
+  });
 
   const {
     handleSubmit,
     register,
     formState: { errors },
-    setValue,
-    watch,
     reset,
   } = methods;
 
@@ -70,27 +76,21 @@ export const NewHome = () => {
   const { mutate: addNewProducts, isLoading: Loading } = useAddNewProfileHome();
   const { data, isLoading, error, refetch } = useGetHomeList(currentPages);
   const { mutate: deleteHome, isLoading: deleteLoading } = useDeleteHome();
-  const { data: dataUser } = useGetUserInfoList(currentUserPages);
+  const { data: dataUser, isLoading: userLoading } =
+    useGetUserInfoList(currentUserPages);
 
-  // #### all Create home
-  const onSubmit = async (data: any) => {
-    console.log("Data received:", data);
-    try {
-      const year = new Date(data.constructionYear).getFullYear();
+  // #### all images  handle FileChange
+  const handleFileChange = (e: any) => {
+    const files = e.target.files;
+    setSelectedImageFiles(files);
+    const newSelectedImages = [];
 
-      const homeData = {
-        ...data,
-        constructionYear: year,
-      };
-
-      addNewProducts(homeData);
-      setShow(false);
-    } catch (error) {
-      console.error("Error adding new home:", error);
+    for (let i = 0; i < files.length; i++) {
+      newSelectedImages.push(URL.createObjectURL(files[i]));
     }
-  };
 
-  console.log("your router is ", AdminRoutes.DASHBOARD.absolutePath);
+    setSelectedImages(newSelectedImages);
+  };
 
   //    ######## for deleteHome  #######
   const handleDelete = async (home: any) => {
@@ -106,10 +106,12 @@ export const NewHome = () => {
     }
   };
 
-  //    ######## for cancel  #######
+  //    ######## for cancel modal #######
   const handleCancelModal = () => {
     setShow(false);
     reset();
+    refetch();
+    setSelectedImages([]);
   };
 
   if (isLoading) {
@@ -128,26 +130,40 @@ export const NewHome = () => {
     );
   }
 
-  const homes = data?.homePerPage || [];
-  console.log(homes);
-  console.log(homes);
-
   const indexOfLastHome = currentPages * resultPerHomePage;
   const indexOfFirstHome = indexOfLastHome - resultPerHomePage;
+  const totalPages = Math.ceil(data?.homeCount / resultPerHomePage);
 
-  const pagination = (action: string | number) => {
-    if (action === "prev") {
-      setCurrentPages((prevPage) => Math.max(prevPage - 1, 1));
-    } else if (action === "next") {
-      setCurrentPages((prevPage) =>
-        Math.min(prevPage + 1, Math.ceil(data?.homeCount / resultPerHomePage))
-      );
-    } else {
-      setCurrentPages(
-        typeof action === "string" ? parseInt(action, 10) : action
-      );
+  const handleNextPage = () => {
+    setCurrentPages((prevPage) => prevPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPages((prevPage) => prevPage - 1);
+  };
+
+  // #### all Create home
+  const onSubmit = async (data: any) => {
+    console.log("Data received:", data);
+    try {
+      const year = new Date(data.constructionYear).getFullYear();
+
+      const homeData = {
+        ...data,
+        constructionYear: year,
+        images: selectedImageFiles,
+      };
+      console.log("homeData", homeData);
+
+      addNewProducts(homeData);
+
+      setShow(false);
+    } catch (error) {
+      console.error("Error adding new home:", error);
     }
   };
+
+  const homes = data?.homePerPage || [];
 
   return (
     <section className="create-home">
@@ -383,30 +399,55 @@ export const NewHome = () => {
                       <label className="block text-admin-color font-medium mb-1">
                         Upload Images
                       </label>
-                      <div className="flex h-80 items-center  w-auto bg-[#282828] border-[1.5px] border-admin-color border-dashed rounded-[16px]">
-                        <div className="box__input w-full">
+                      <div className="flex h-80 items-center w-auto bg-[#282828] border-[1.5px] border-admin-color border-dashed rounded-[16px]">
+                        <div className="box__input w-full text-center">
                           <label className="text-center cursor-pointer">
-                            <p className="text-center mb-5 flex items-center justify-center">
-                              <SlCloudUpload
-                                size={80}
-                                className="text-admin-color"
-                              />
-                            </p>
                             <input
                               type="file"
                               className="hidden"
                               accept="/*"
                               multiple
-                              {...register("images")}
+                              onChange={handleFileChange}
                             />
-                            <div className="text-center">
-                              <strong className="font-figtree text-base leading-[28.8px] font-normal text-admin-color">
-                                Drag and drop files here <br />
-                              </strong>
-                              <span className="font-figtree text-base leading-[28.8px] font-medium text-admin-color">
-                                Browse Files
-                              </span>
-                            </div>
+
+                            {selectedImages.length > 0 ? (
+                              <div className="\">
+                                <div className="flex px-2 flex-wrap gap-3">
+                                  {selectedImages.map((imageUrl, index) => (
+                                    <Image
+                                      key={index}
+                                      src={imageUrl}
+                                      alt={`Selected ${index + 1}`}
+                                      width={100}
+                                      height={100}
+                                      className="w-16 mb-2 rounded"
+                                    />
+                                  ))}
+                                </div>
+                                <strong className="font-figtree text-base leading-[28.8px] font-normal text-admin-color">
+                                  Please Select another image
+                                  <br />
+                                </strong>
+                                <span className="font-figtree text-base leading-[28.8px] font-medium text-admin-color">
+                                  Browse Files
+                                </span>
+                              </div>
+                            ) : (
+                              <>
+                                <p className="text-center mb-5 flex items-center justify-center">
+                                  <SlCloudUpload
+                                    size={80}
+                                    className="text-admin-color"
+                                  />
+                                </p>
+                                <strong className="font-figtree text-base leading-[28.8px] font-normal text-admin-color">
+                                  Drag and drop files here <br />
+                                </strong>
+                                <span className="font-figtree text-base leading-[28.8px] font-medium text-admin-color">
+                                  Browse Files
+                                </span>
+                              </>
+                            )}
                           </label>
                         </div>
                       </div>
@@ -436,26 +477,36 @@ export const NewHome = () => {
         </div>
         <div className="grid grid-cols-3 items-center ">
           <div className="border bg-[#434343] py-3 m-4 text-white text-center items-center rounded-xl flex justify-around h-40 ">
-            <div><BsBuildings size="42" /></div>
+            <div>
+              <BsBuildings size="42" />
+            </div>
             <div>
               <div className="text-xl ">Available Properties</div>{" "}
               <div className="text-3xl text-start pt-3">{data.homeCount}</div>
             </div>
           </div>
           <div className="border  bg-[#434343] py-3 m-4 text-white text-center items-center rounded-xl flex justify-around h-40">
-          <div><BsBuildings size="42" /></div>
             <div>
-              <div className="text-xl ">Available Properties</div>{" "}
+              <HiUsers size="42" />
+            </div>
+            <div>
+              <div className="text-xl ">User List</div>{" "}
               <div className="text-3xl text-start pt-3">
-                <sub>{dataUser?.userCount} </sub>
+                {userLoading ? (
+                  <span className="text-white">loading....</span>
+                ) : (
+                  <sub>{dataUser?.userCount}</sub>
+                )}
               </div>
             </div>
           </div>
           <div className="border bg-[#434343] py-3 m-4 text-white text-center  items-center rounded-xl flex justify-around h-40">
-          <div><BsBuildings size="42" /></div>
             <div>
-              <div className="text-xl ">Available Properties</div>{" "}
-              <div className="text-3xl text-start pt-3">{data.homeCount}</div>
+              <MdOtherHouses size="42" />
+            </div>
+            <div>
+              <div className="text-xl ">Others</div>{" "}
+              <div className="text-3xl text-start pt-3">N/A</div>
             </div>
           </div>
         </div>
@@ -497,23 +548,28 @@ export const NewHome = () => {
                     <td className="px-5 py-2">{home.address}</td>
                     <td className="px-5 py-2">
                       <ul className="flex gap-4 justify-center">
-                        <li>
-                          <RiEditLine
-                            onClick={() =>
-                              router.push(
-                                `/admin/home-details/${home._id}/edit`
-                              )
-                            }
-                            className="cursor-pointer"
-                            size={20}
-                            color="#008000"
-                          />
-                        </li>
+                        <Tooltip text="Edit">
+                          <li>
+                            <RiEditLine
+                              onClick={() =>
+                                router.push(
+                                  `/admin/home-details/${home._id}/edit`
+                                )
+                              }
+                              className="cursor-pointer"
+                              size={20}
+                              color="#008000"
+                            />
+                          </li>
+                        </Tooltip>
+                        <Tooltip text="View">
                         <li>
                           <Link href={`home-details/${home._id}`}>
                             <SlEye size={20} />
                           </Link>
                         </li>
+                        </Tooltip>
+                        <Tooltip text="Delete">
                         <li>
                           <button
                             className="cursor-pointer"
@@ -522,33 +578,36 @@ export const NewHome = () => {
                             <RiDeleteBin6Line size={20} color="#FF0000" />
                           </button>
                         </li>
+                        </Tooltip>
                       </ul>
                     </td>
                   </tr>
                 ))}
             </table>
-
-            <div className="pagination mt-6">
-              <ul className="flex gap-4">
-                <li className="bg-greyish px-3 rounded text-white">
-                  <button onClick={() => pagination("prev")}>Previous</button>
-                </li>
-                {Array.from({
-                  length: Math.ceil(homes.length / resultPerHomePage),
-                }).map((_, index) => (
-                  <li key={index}>
-                    <button
-                      onClick={() => pagination(index + 1)}
-                      className="text-white"
-                    >
-                      {currentPages}
-                    </button>
-                  </li>
-                ))}
-                <li className="bg-greyish px-3 rounded text-white">
-                  <button onClick={() => pagination("next")}>Next</button>
-                </li>
-              </ul>
+            <div className="flex items-center justify-end mt-3">
+              <button
+                onClick={handlePrevPage}
+                disabled={currentPages === 1}
+                className={`${
+                  currentPages === 1 && "opacity-50 cursor-not-allowed"
+                }`}
+              >
+                <MdOutlineNavigateNext
+                  size={30}
+                  color="white"
+                  className="rotate-180"
+                />
+              </button>
+              <span className="pagination-text text-white">{`Page ${currentPages} of ${totalPages}`}</span>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPages === totalPages}
+                className={`${
+                  currentPages === totalPages && "opacity-50 cursor-not-allowed"
+                }`}
+              >
+                <MdOutlineNavigateNext size={30} color="white" />
+              </button>
             </div>
           </>
         )}
