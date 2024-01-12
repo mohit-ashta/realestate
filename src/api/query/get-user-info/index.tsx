@@ -2,12 +2,12 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 
-const getUserInfoList = async (page: any) => {
+const getUserInfoList = async (page: any,keyword:any) => {
   const getToken = localStorage.getItem("token");
   try {
     const reqOptions = {
       method: "GET",
-      url: `http://localhost:4000/api/v1/admin/users-list?page=${page}`,
+      url: `http://localhost:4000/api/v1/admin/users-list?page=${page}&keyword=${keyword}`,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${getToken}`,
@@ -29,7 +29,7 @@ const getUserInfoList = async (page: any) => {
   }
 };
 
-export const useGetUserInfoList = (page: any) => {
-  return useQuery([ page], () => getUserInfoList(page));
+export const useGetUserInfoList = (page: any,keyword:any) => {
+  return useQuery([page,keyword], () => getUserInfoList(page,keyword));
 }; 
 

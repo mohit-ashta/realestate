@@ -26,8 +26,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {isAdminRoute ? (
         <div className="flex h-[calc(100vh-88.88px)]">
           <AdminSidebar />
-          <div className="p-10">
-            <div className=" h-[calc(100vh-168.88px)] overflow-y-scroll no-scroll">
+          <div className="p-10 w-full">
+            <div className="h-[calc(100vh-168.88px)] overflow-y-scroll no-scroll">
               {children}
             </div>
           </div>

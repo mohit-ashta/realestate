@@ -15,12 +15,21 @@ import { number } from "yup";
 
 const UserInfoList = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, isLoading, error, refetch } = useGetUserInfoList(currentPage);
+  const [userKeyword, setUserKeyword] = useState("");
+  const [userValue, setUserValue] = useState("");
+
+  const { data, isLoading, error, refetch } = useGetUserInfoList(currentPage,userKeyword);
+ 
   const { mutate: deleteUser } = useGetUserDelete();
-  console.log("currentPage", currentPage);
+
 
   const resultPerPage = 5;
-
+  const handleInputChange = (event: any) => {
+    setUserValue(event.target.value);
+  };
+  const handleButtonClick = () => {
+    setUserKeyword(userValue);
+  };
   const handleUserDelete = async (user: any) => {
     console.log("Deleting user:", user._id);
     try {
@@ -56,12 +65,15 @@ const UserInfoList = () => {
   const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(data?.userCount / resultPerPage);
   console.log("resultPerPage", resultPerPage);
-  console.log("users.length", users.length);
+  console.log("users", users);
+
+
+
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
-
+ 
   const handlePrevPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
   };
@@ -69,11 +81,27 @@ const UserInfoList = () => {
   return (
     <Layout>
       <section>
-        <div className="wrapper">
+        <div >
           <div className="flex gap-4 items-center justify-between mb-10">
-            <h1 className="sm:text-3xl text-2xl font-medium title-font text-admin-color">
+            <h1 className="sm:text-3xl text-2xl font-medium title-font text-admin-color flex  justify-between">
               User List
             </h1>
+            <div className="flex items-center">
+            <input
+              type="text"
+              placeholder="Search by name"
+              value={userValue}
+              onChange={handleInputChange}
+              className="p-2 mr-2 border border-[#353535] focus:outline-none focus:border-[#606060] bg-[#303030] text-white"
+            />
+            <button
+              type="submit"
+              className="bg-[#313131] px-3 py-2 text-admin-color2"
+              onClick={handleButtonClick}
+            >
+              Search
+            </button>
+            </div>
           </div>
           <table className="table-fixed w-full text-white home-lists border border-[#353535]">
             <tr className="border-b border-b-[#353535] text-admin-color2">

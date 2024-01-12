@@ -21,7 +21,7 @@ export const PropertyListTemplate = () => {
   const [currentPropertyPages, setCurrentPropertyPages] = useState(1);
 
   const { data, isLoading, error, refetch } =
-    useGetHomeList(currentPropertyPages);
+    useGetHomeList(currentPropertyPages,[]);
 
   useEffect(() => {
     refetch();
