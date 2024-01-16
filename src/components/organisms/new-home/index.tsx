@@ -29,6 +29,7 @@ import { HiUsers } from "react-icons/hi2";
 import { MdOtherHouses, MdOutlineNavigateNext } from "react-icons/md";
 import Image from "next/image";
 import Tooltip from "@/components/atoms/tooltip";
+import { IoSearch } from "react-icons/io5";
 
 export const NewHome = () => {
   useAuth({
@@ -60,6 +61,8 @@ export const NewHome = () => {
   const [show, setShow] = useState(false);
   const [currentPages, setCurrentPages] = useState(1);
   const [currentUserPages, setCurrentUserPages] = useState(1);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [inputValue, setInputValue] = useState("");
 
   const methods = useForm({
     resolver: yupResolver(validateSchema),
@@ -74,10 +77,15 @@ export const NewHome = () => {
 
   // #### all mutate
   const { mutate: addNewProducts, isLoading: Loading } = useAddNewProfileHome();
-  const { data, isLoading, error, refetch } = useGetHomeList(currentPages);
+  const { data, isLoading, error, refetch } = useGetHomeList(
+    currentPages,
+    searchKeyword
+  );
   const { mutate: deleteHome, isLoading: deleteLoading } = useDeleteHome();
-  const { data: dataUser, isLoading: userLoading } =
-    useGetUserInfoList(currentUserPages);
+  const { data: dataUser, isLoading: userLoading } = useGetUserInfoList(
+    currentUserPages,
+    []
+  );
 
   // #### all images  handle FileChange
   const handleFileChange = (e: any) => {
@@ -92,6 +100,14 @@ export const NewHome = () => {
     setSelectedImages(newSelectedImages);
   };
 
+  // #### search functions
+  const handleInputChange = (event: any) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleSearch = () => {
+    setSearchKeyword(inputValue);
+  };
   //    ######## for deleteHome  #######
   const handleDelete = async (home: any) => {
     console.log("Deleting home:", home._id);
@@ -110,7 +126,6 @@ export const NewHome = () => {
   const handleCancelModal = () => {
     setShow(false);
     reset();
-    refetch();
     setSelectedImages([]);
   };
 
@@ -167,12 +182,12 @@ export const NewHome = () => {
 
   return (
     <section className="create-home">
-      <div className="wrapper">
-        <div className="flex gap-4 items-center justify-between mb-10">
-          <h1 className="sm:text-3xl text-2xl font-medium title-font text-admin-color">
+      <div className="wrappers">
+        <div className="grid lg:grid-cols-3 grid-cols-2 gap-4 lg:items-center  mb-10 ">
+          <h1 className="md:text-3xl text-2xl font-medium title-font text-admin-color">
             Admin Dashboard
           </h1>
-          <Modal
+          <Modal 
             isOpen={show}
             style={customStyles}
             onRequestClose={handleCancelModal}
@@ -195,7 +210,7 @@ export const NewHome = () => {
                     className="grid lg:grid-cols-2 grid-cols lg:gap-20 gap-5 "
                   >
                     <div>
-                      <div className="grid grid-cols-3 gap-3">
+                      <div className="grid lg:grid-cols-3 grid-cols-2 gap-3">
                         <div className="mb-4">
                           <label className="block text-admin-color font-medium mb-1">
                             Name
@@ -263,7 +278,7 @@ export const NewHome = () => {
                         </div>
                         <div className="mb-4">
                           <label className="block text-admin-color font-medium mb-1">
-                            Size{" "}
+                            Size
                             <small>
                               (ft<sup>2</sup>)
                             </small>
@@ -465,48 +480,76 @@ export const NewHome = () => {
               </div>
             </div>
           </Modal>
-
-          <div className="flex gap-4 items-center">
+          <span className="flex items-center order-2   max-w-[290px]  justify-between">
+            <input
+              type="text"
+              placeholder="Search by name or email"
+              value={inputValue}
+              onChange={handleInputChange}
+              className="md:p-2 max-w-[240px] p-1 border border-[#353535] focus:outline-none  bg-transparent text-white"
+            />
+            <span
+              className="md:px-3 md:py-2 px-2 py-[8px] text-admin-color2 cursor-pointer "
+              onClick={handleSearch}
+            >
+              <IoSearch size="27"/>
+            </span>
+          </span>
+        
+          <div className="flex justify-end items-center lg:order-3">
             <button
               onClick={() => setShow(true)}
-              className="text-admin-color2 text-base font-medium flex gap-1 items-center bg-[#313131] py-3 px-5 rounded focus:outline-none focus:shadow-outline"
+              className="text-admin-color2 lg:text-base text-sm font-medium flex gap-1 items-center bg-[#313131] lg:py-3 lg:px-5 px-3 py-2 rounded focus:outline-none focus:shadow-outline"
             >
               Create New Home
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-3 items-center ">
-          <div className="border bg-[#434343] py-3 m-4 text-white text-center items-center rounded-xl flex justify-around h-40 ">
-            <div>
-              <BsBuildings size="42" />
+        <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1  items-center gap-6 mb-8 text-admin-color2">
+          <div className="bg-[#313131]  items-center rounded-xl flex lg:p-2 xl:p-10 p-5 gap-6 justify-between  h-[150px]">
+          <div className="md:max-w-14 max-w-10">
+              <Image
+                src="/image/home.png"
+                alt="building"
+                width={70}
+                height={70}
+              />
             </div>
             <div>
-              <div className="text-xl ">Available Properties</div>{" "}
-              <div className="text-3xl text-start pt-3">{data.homeCount}</div>
-            </div>
-          </div>
-          <div className="border  bg-[#434343] py-3 m-4 text-white text-center items-center rounded-xl flex justify-around h-40">
-            <div>
-              <HiUsers size="42" />
-            </div>
-            <div>
-              <div className="text-xl ">User List</div>{" "}
-              <div className="text-3xl text-start pt-3">
-                {userLoading ? (
-                  <span className="text-white">loading....</span>
-                ) : (
-                  <sub>{dataUser?.userCount}</sub>
-                )}
+              <div className="lg:text-3xl text-xl pt-3 text-right">
+                {data.homeCount ? data.homeCount : "0"}
               </div>
+              <div className="lg:text-xl text-md">Available Properties</div>
             </div>
           </div>
-          <div className="border bg-[#434343] py-3 m-4 text-white text-center  items-center rounded-xl flex justify-around h-40">
-            <div>
-              <MdOtherHouses size="42" />
+          <div className="bg-[#313131]  items-center rounded-xl flex lg:p-2 xl:p-10 p-5 gap-6 justify-between  h-[150px]">
+            <div className="md:max-w-14 max-w-10">
+              <Image
+                src="/image/user.png"
+                alt="building"
+                width={70}
+                height={70}
+              />
             </div>
             <div>
-              <div className="text-xl ">Others</div>{" "}
-              <div className="text-3xl text-start pt-3">N/A</div>
+              <div className="lg:text-3xl text-xl pt-3 text-right">
+                {dataUser?.userCount ? dataUser?.userCount : "0"}{" "}
+              </div>
+              <div className="lg:text-xl text-md">Logged In Users</div>
+            </div>
+          </div>
+          <div className="bg-[#313131]  items-center rounded-xl flex lg:p-2 xl:p-10 p-5 gap-6 justify-between  h-[150px]">
+          <div className="md:max-w-14 max-w-10">
+              <Image
+                src="/image/menu.png"
+                alt="building"
+                width={70}
+                height={70}
+              />
+            </div>
+            <div>
+              <div className="lg:text-3xl text-xl pt-3 text-right">0</div>
+              <div className="lg:text-xl text-md">Other Notifications</div>
             </div>
           </div>
         </div>
@@ -516,21 +559,23 @@ export const NewHome = () => {
           </div>
         ) : (
           <>
-            <table className="table-fixed w-full text-white home-lists border border-[#353535]">
+          <div className="overflow-x-scroll scroll-smooth scrollHide">
+            <table className="w-full table-auto  text-white home-lists border border-[#353535] ">
               <tr className="border-b border-b-[#353535] text-admin-color2">
-                <th className="text-left px-5 py-4 bg-[#313131] w-[10%]">
+           
+                <th className="text-left px-5 py-4 bg-[#313131]">
                   Sr. No.
-                </th>
-                <th className="text-left px-5 py-4 bg-[#313131] w-[40%]">
+                </th> 
+                <th className="text-left px-5 py-4 bg-[#313131] ">
                   Name
                 </th>
-                <th className="text-left px-5 py-4 bg-[#313131] w-[15%]">
+                <th className="text-left px-5 py-4 bg-[#313131] ">
                   Price
                 </th>
-                <th className="text-left px-5 py-4 bg-[#313131] w-[25%]">
+                <th className="text-left px-5 py-4 bg-[#313131] ">
                   Location
                 </th>
-                <th className="text-center px-5 py-4 bg-[#313131] w-[10%]">
+                <th className="text-center px-5 py-4 bg-[#313131] ">
                   Actions
                 </th>
               </tr>
@@ -540,36 +585,31 @@ export const NewHome = () => {
                     className="border-b border-b-[#353535] text-admin-color2"
                     key={home._id}
                   >
-                    <td className="px-5 py-2">{indexOfFirstHome + idx + 1}</td>
+                    <td className="px-5 py-2 ">{indexOfFirstHome + idx + 1}</td>
                     <td className="px-5 py-2">{home.name}</td>
                     <td className="px-5 py-2">
                       &#8377; <span>{home.price.toLocaleString()}</span>
                     </td>
-                    <td className="px-5 py-2">{home.address}</td>
+                    <td className="px-5 py-2 " >{home.address}</td>
                     <td className="px-5 py-2">
                       <ul className="flex gap-4 justify-center">
-                        <Tooltip text="Edit">
-                          <li>
-                            <RiEditLine
-                              onClick={() =>
-                                router.push(
-                                  `/admin/home-details/${home._id}/edit`
-                                )
-                              }
-                              className="cursor-pointer"
-                              size={20}
-                              color="#008000"
-                            />
-                          </li>
-                        </Tooltip>
-                        <Tooltip text="View">
+                        <li>
+                          <RiEditLine
+                            onClick={() =>
+                              router.push(
+                                `/admin/home-details/${home._id}/edit`
+                              )
+                            }
+                            className="cursor-pointer"
+                            size={20}
+                            color="#008000"
+                          />
+                        </li>
                         <li>
                           <Link href={`home-details/${home._id}`}>
                             <SlEye size={20} />
                           </Link>
                         </li>
-                        </Tooltip>
-                        <Tooltip text="Delete">
                         <li>
                           <button
                             className="cursor-pointer"
@@ -578,12 +618,12 @@ export const NewHome = () => {
                             <RiDeleteBin6Line size={20} color="#FF0000" />
                           </button>
                         </li>
-                        </Tooltip>
                       </ul>
                     </td>
                   </tr>
                 ))}
             </table>
+            </div>
             <div className="flex items-center justify-end mt-3">
               <button
                 onClick={handlePrevPage}

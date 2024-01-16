@@ -1,11 +1,11 @@
 import { FooterMenuProps, HeaderMenuProps, SidebarMenuProps, SocialIconsProps } from "@/types/types";
 import Link from "next/link";
 
-export const HeaderMenuItem: React.FC<HeaderMenuProps> = ({ link, title }) => {
+export const HeaderMenuItem: React.FC<HeaderMenuProps> = ({ link, title ,className}) => {
     return (
         <Link
             href={link}
-            className="text-black text-base uppercase font-medium"
+            className={` ${className ||"text-black text-base uppercase font-medium" } `}
         >
             {title}
         </Link>

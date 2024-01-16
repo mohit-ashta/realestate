@@ -89,13 +89,13 @@ const EditHome = () => {
     return (
         <Layout>
             <section>
-                <div>
+                <div className='p-5 lg:p-0'>
                     <div className="mb-10">
                         <h1 className="sm:text-3xl text-2xl font-medium title-font text-admin-color">
                             Edit Home
                         </h1>
                     </div>
-                    <div className="flex flex-col items-center justify-center">
+                    <div className="flex flex-col lg:items-center justify-center">
                         <div className="text-right w-full"></div>
                         <div>
                             <FormProvider {...methods}>
@@ -104,7 +104,7 @@ const EditHome = () => {
                                     className="grid lg:grid-cols-2 grid-cols lg:gap-20 gap-5 "
                                 >
                                     <div>
-                                        <div className="grid grid-cols-3 gap-3">
+                                        <div className="grid lg:grid-cols-3 grid-cols-2 gap-3">
                                             <div className="mb-4">
                                                 <label className="block text-admin-color font-medium mb-1">
                                                     Name

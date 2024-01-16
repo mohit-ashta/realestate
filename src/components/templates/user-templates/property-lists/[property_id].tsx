@@ -68,7 +68,7 @@ const SinglePropertyListTemplate = () => {
       <section className="text-gray-600 body-font overflow-hidden lg:py-[90px] py-10">
         <div className="wrapper">
           <div className="mb-4">
-            <div className="grid lg:grid-cols-2 grid-cols gap-8 items-center">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 items-center">
               <div className="relative">
                 <Swiper
                   className="mySwiper z-1 relative swiper2"
@@ -116,7 +116,7 @@ const SinglePropertyListTemplate = () => {
                 <div className="lg:pb-6 ">
                   <h6 className="text-lg py-5 text-black">Property Features</h6>
                   <div className="grid lg:grid-cols-2 grid-cols lg:gap-5">
-                  <div className="flex justify-between items-center border-b border-b-[#313131] pb-3 lg:pt-0 pt-3 text-admin-color2">
+                  <div className="flex justify-between items-center border-b border-b-[#dedede] pb-3 lg:pt-0 pt-3">
                       <div className="flex gap-3">
                         <span className="text-sm">
                           <HiOutlineBuildingOffice2 size="20" />
@@ -124,7 +124,7 @@ const SinglePropertyListTemplate = () => {
                         <span className="text-sm">Size </span>
                       </div>
                       <span className="text-end text-sm capitalize">
-                        {homeDetails?.size}  <small className="lowercase">ft<sup>2</sup></small>
+                        {homeDetails?.size}
                       </span>
                     </div>
                     <div className="flex justify-between items-center border-b border-b-[#dedede] pb-3 lg:pt-0 pt-3">
