@@ -83,6 +83,7 @@ export interface userInfoProps {
 export interface HeaderMenuProps {
   title: string;
   link: string;
+  className?:string;
 }
 
 export interface FooterMenuProps {

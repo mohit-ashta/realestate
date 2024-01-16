@@ -191,9 +191,25 @@ input[type=number] {
   white-space: nowrap;
   z-index: 1;
 }
-
+.scrollHide::-webkit-scrollbar {
+  display: none;
+}
+.toggle_Show {
+	z-index: 999 !important ;
+}
+.EZDrawer__container {
+	width: 100% !important ;
+  background-color: #313131 !important;
+}
 @media screen and (max-width: 1023px) {
   .dm_slider {
     height: 500px;
   }
+}
+@media only screen and (max-width: 768px) {
+  .ReactModal__Content {
+  padding: 22px !important;
+  width: 344px !important;
+  height: 600px !important;
+}
 }

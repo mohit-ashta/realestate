@@ -21,12 +21,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     !nonAdminRoutesPattern.test(router.pathname);
 
   return (
-    <div className={`${isAdminRoute ? "bg-secondary" : "pb-5 px-5"}`}>
+    <div className={`${isAdminRoute ? "bg-secondary" : "lg:pb-5 lg:px-5 px-2 pb-2"}`}>
       <Header />
       {isAdminRoute ? (
-        <div className="flex h-[calc(100vh-88.88px)]">
+        <div className="md:flex md:h-[calc(100vh-88.88px)] block">
           <AdminSidebar />
-          <div className="p-10 w-full">
+          <div className="lg:p-10 p-4 w-full">
             <div className="h-[calc(100vh-168.88px)] overflow-y-scroll no-scroll">
               {children}
             </div>
@@ -35,7 +35,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       ) : (
         <div>{children}</div>
       )}
-      {isAdminRoute ? "" : <Footer />}
+      {isAdminRoute ? null : <Footer />}
     </div>
   );
 };

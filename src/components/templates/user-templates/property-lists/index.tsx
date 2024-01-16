@@ -15,14 +15,23 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
 import { MdOutlineNavigateNext } from "react-icons/md";
+import { IoSearch } from "react-icons/io5";
 
 export const PropertyListTemplate = () => {
   const resultPerPropertyPage = 6;
   const [currentPropertyPages, setCurrentPropertyPages] = useState(1);
-
-  const { data, isLoading, error, refetch } =
-    useGetHomeList(currentPropertyPages,[]);
-
+  const [propertyKeyword, setPropertyKeyword] = useState("");
+  const [getValue, setGetValue] = useState("");
+  const { data, isLoading, error, refetch } = useGetHomeList(
+    currentPropertyPages,
+    propertyKeyword
+  );
+  const handlerInput = (e: any) => {
+    setGetValue(e.target.value);
+  };
+  const handlerProperty = () => {
+    setPropertyKeyword(getValue);
+  };
   useEffect(() => {
     refetch();
   }, [refetch]);
@@ -63,8 +72,23 @@ export const PropertyListTemplate = () => {
           </h1>
         </div>
       </section>
-      <section className="bg-white pt-[90px] pb-[50px]">
+      <section className="bg-white  pb-[50px]">
         <div className="wrapper">
+          <div className="flex justify-end py-[20px]">
+            <span className="border  flex justify-between  max-w-[370px]">
+              <input
+                className="focus:outline-none px-2 py-1"
+                onChange={handlerInput}
+                value={getValue}
+                placeholder="search by name"
+              />
+              <IoSearch
+                size="22"
+                className="self-center text-greyish"
+                onClick={handlerProperty}
+              />{" "}
+            </span>
+          </div>
           {homes.length < 1 ? (
             <div className="grid  grid-cols place-items-center items-center text-primary ">
               Sorry ! There is no Property <div className="text-2xl">🥺</div>
@@ -72,7 +96,7 @@ export const PropertyListTemplate = () => {
           ) : (
             <>
               <div
-                className="grid lg:grid-cols-3 grid-cols gap-6"
+                className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3  lg:gap-6"
                 data-aos="fade-up"
                 data-aos-anchor-placement="center-center"
               >
@@ -94,7 +118,7 @@ export const PropertyListTemplate = () => {
                                   <SwiperSlide key={idx}>
                                     <Image
                                       key={image._id}
-                                      className="rounded h-[290px] w-full object-cover object-center"
+                                      className="rounded lg:h-[290px] h-[490px]  w-full object-cover object-center"
                                       src={`http://localhost:4000/uploads/${image?.filename}`}
                                       alt={image.filename}
                                       width={500}

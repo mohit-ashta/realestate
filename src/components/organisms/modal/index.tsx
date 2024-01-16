@@ -9,7 +9,6 @@ export const CommonModal: React.FC<ModalProps> = ({
   buttonIcon,
   width,
   className,
-  
 }) => {
   const customStyles = {
     content: {
@@ -29,17 +28,29 @@ export const CommonModal: React.FC<ModalProps> = ({
 
   const openModal = () => {
     setIsOpen(true);
-  }
+  };
 
   const closeModal = () => {
     setIsOpen(false);
-  }
+  };
   return (
     <>
-      <button onClick={openModal} className={`text-black text-base uppercase font-medium flex gap-1 items-center ${className}`}>{buttonIcon && <span>{buttonIcon}</span>}{buttonText}</button>
-      <Modal style={customStyles} isOpen={isOpen} onRequestClose={closeModal}>
-        <button onClick={closeModal} className="flex justify-end w-full"><AiOutlineClose size={20} /></button>
+      <button
+        onClick={openModal}
+        className={`${
+          className ||
+          "text-black text-base uppercase font-medium flex gap-1 items-center"
+        } `}
+      >
+        {buttonIcon && <span>{buttonIcon}</span>}
+        {buttonText}
+      </button>
+      <Modal style={customStyles} isOpen={isOpen} onRequestClose={closeModal} >
+        <button onClick={closeModal} className="flex justify-end w-full">
+          <AiOutlineClose size={20} />
+        </button>
         {children}
+        
       </Modal>
     </>
   );
