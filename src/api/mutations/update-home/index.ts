@@ -8,7 +8,7 @@
 //   try {
 //     const reqOptions = {
 //       method: "PUT", 
-//       url: `http://localhost:4000/api/v1/home/update/${updateHome}`, 
+//       url: `http://192.168.1.37:4000/api/v1/home/update/${updateHome}`, 
 //       headers: {
 //         "Content-Type": "application/json",
 //         Authorization: `Bearer ${getToken}`,
@@ -47,8 +47,8 @@ import { UpdateHomeProps } from "../../../types/types";
 import { ErrorResponse } from "@/types/types";
 
 const getUpdateHome = async (updateHome: UpdateHomeProps) => {
-  console.log('updateHome', updateHome);
-  
+  console.log('updateHome api', updateHome);
+
   const getToken = localStorage.getItem("token");
   try {
     const formData = new FormData();
@@ -65,22 +65,23 @@ const getUpdateHome = async (updateHome: UpdateHomeProps) => {
     formData.append("garage", updateHome.garage.toString());
     formData.append("address", updateHome.address.toString());
 
-    for (let i = 0; i < updateHome.images.length; i++) {
-      formData.append("images", updateHome.images[i]);
+    for (let i = 0; i < updateHome?.images.length; i++) {
+      formData.append("images api", updateHome.images[i]);
     }
-
+    console.log('Number of images: >apiiiiiiiiii', updateHome?.images.length);
+    console.log('Images: apiiiiiiiiii', updateHome?.images);
     const reqOptions = {
       method: "PUT",
-      url: `http://localhost:4000/api/v1/home/update/${updateHome._id}`,
+      url: `http://192.168.1.37:4000/api/v1/home/update/${updateHome._id}`,
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${getToken}`,
       },
+      
       data: formData,
+      
     };
     const { data } = await axios(reqOptions);
-    console.log(data);
-    
     return data;
   } catch (error) {
     const axiosError = error as AxiosError<ErrorResponse>;

@@ -61,23 +61,28 @@ const Header = () => {
             : "text-gray-600 bg-white"
         }`}
       >
-        <div className="container flex  flex-wrap py-5    items-center justify-between gap-3 lg:px-0 px-4">
+        <div className="container flex  flex-wrap py-5 items-center justify-between gap-3 lg:px-0 px-4">
           <Logo width={250} height={33} />   
               <Sidebar/>  
           {isAdminRoute ? (
             ""
           ) : (
-            <nav className="lg:flex justify-center flex-wrap items-center text-base lg:gap-8 gap-3 hidden">
-              {HeaderMenuTab.find((tab) => tab.role === user?.role)?.tabs.map(
-                (item: any, idx: number) => (
-                  <HeaderMenuItem
-                    key={idx}
-                    title={item.title}
-                    link={item.link}
-                  />
-                )
-              )}
-            </nav>
+            <nav className={`lg:flex justify-center flex-wrap items-center text-base lg:gap-8 gap-3 hidden`}>
+            {HeaderMenuTab.find((tab) => tab.role === user?.role)?.tabs.map(
+              (item: any, idx: number) => (
+                <HeaderMenuItem
+                  key={idx}
+                  title={item.title}
+                  link={item.link}
+                  className={` hover:text-primary px-4 py-3 text-black ${
+                    router.pathname == item.link
+                      ? "text-primary border-b border-black "
+                      : ""
+                  }`}
+                />
+              )
+            )}
+          </nav>
           )}
           <div className="lg:flex gap-4 items-center hidden">
                {token ? (

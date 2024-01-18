@@ -7,7 +7,7 @@ const getUserInfoList = async (page: any,keyword:any) => {
   try {
     const reqOptions = {
       method: "GET",
-      url: `http://localhost:4000/api/v1/admin/users-list?page=${page}&keyword=${keyword}`,
+      url: `http://192.168.1.37:4000/api/v1/admin/users-list?page=${page}&keyword=${keyword}`,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${getToken}`,

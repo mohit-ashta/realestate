@@ -20,6 +20,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import PageNotFound from "@/components/molecules/page-not-found";
 import { Navigation, Pagination } from "swiper/modules";
+import { formatNumberInLakhsOrCrores } from "@/components/atoms/format-change";
 
 const SingleHomeListTemplate = () => {
   const router = useRouter();
@@ -48,7 +49,7 @@ const SingleHomeListTemplate = () => {
   }
 
   const homeDetails = data?.buyHome; // Adjust this based on your API response structure
-  console.log("homeDetails", homeDetails);
+  // console.log("homeDetails", homeDetails);
 
   return (
     <Layout>
@@ -69,7 +70,7 @@ const SingleHomeListTemplate = () => {
                         <Image
                           key={image._id}
                           className="rounded object-cover object-center w-full h-[500px]"
-                          src={`http://localhost:4000/uploads/${image?.filename}`}
+                          src={`http://192.168.1.37:4000/uploads/${image?.filename}`}
                           alt={image?.filename}
                           width={500}
                           height={20}
@@ -85,7 +86,7 @@ const SingleHomeListTemplate = () => {
                     {homeDetails?.name}
                   </h3>
                   <p className="text-admin-color lg:text-base title-font font-medium min-w-[200px] text-end">
-                    &#8377; {homeDetails?.price.toLocaleString()}
+                  {formatNumberInLakhsOrCrores(homeDetails?.price)}
                   </p>
                 </div>
                 <div className="flex gap-1 items-center mb-4">

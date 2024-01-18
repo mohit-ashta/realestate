@@ -11,6 +11,8 @@ import { useLoginUser } from "@/api/mutations/login-user";
 import { loginSchema } from "@/validation-schema";
 import { useRouter } from "next/router";
 import { UserRoutes } from "@/constants/routes";
+import SmallLoader from "@/components/molecules/loader/loader";
+import PageNotFound from "@/components/molecules/page-not-found";
 
 export const LoginForm: React.FC<LoginFormProps> = ({ handleLogin }) => {
   const [view, setView] = useState(false);
@@ -22,10 +24,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ handleLogin }) => {
     formState: { errors },
     reset,
   } = methods;
-  const { mutate: loginuser } = useLoginUser();
+  const { mutate: loginuser, isLoading, error } = useLoginUser();
 
   const onSubmit = (data: LoginFormProps) => {
-    console.log("data", data); 
+    // console.log("data", data);
     loginuser(data, {
       onSuccess: () => {
         reset();
@@ -33,7 +35,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({ handleLogin }) => {
       },
     });
   };
-
+  if (isLoading) {
+    return (
+      <div>
+        <SmallLoader />
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div>
+        <PageNotFound />
+      </div>
+    );
+  }
   return (
     <main className="flex flex-col items-center justify-center">
       <div className="p-6">
@@ -68,8 +83,19 @@ export const LoginForm: React.FC<LoginFormProps> = ({ handleLogin }) => {
                 Password
               </label>
               <div className="absolute right-4 top-[45px] cursor-pointer">
-              {!view ? <BsEye onClick={()=> setView(true)} color="#555555" size={18} /> 
-              : <BsEyeSlash onClick={()=> setView(false)} color="#555555" size={18} />}
+                {!view ? (
+                  <BsEye
+                    onClick={() => setView(true)}
+                    color="#555555"
+                    size={18}
+                  />
+                ) : (
+                  <BsEyeSlash
+                    onClick={() => setView(false)}
+                    color="#555555"
+                    size={18}
+                  />
+                )}
               </div>
               <input
                 type={!view ? "password" : "text"}

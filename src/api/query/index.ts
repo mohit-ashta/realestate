@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 const getHomeList = async (page: any,keyword: any) => {
   try {
     const response = await axios.get(
-      `http://localhost:4000/api/v1/home/list?page=${page}&keyword=${keyword}`,
+      `http://192.168.1.37:4000/api/v1/home/list?page=${page}&keyword=${keyword}`,
       {
         headers: {
           "Content-type": "application/json",

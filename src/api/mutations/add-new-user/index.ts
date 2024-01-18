@@ -7,11 +7,9 @@ const AddNewUser = async (addUser: SignUpFormProps) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:4000/api/v1/register`,
+      `http://192.168.1.37:4000/api/v1/register`,
       addUser,
     );
-    //  const token = response.data.token;
-    // localStorage.setItem("token", token);
     toast.success(response.data.message);
     return response.data;
   } catch (error) {

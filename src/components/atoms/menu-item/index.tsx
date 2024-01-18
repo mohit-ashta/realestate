@@ -5,7 +5,7 @@ export const HeaderMenuItem: React.FC<HeaderMenuProps> = ({ link, title ,classNa
     return (
         <Link
             href={link}
-            className={` ${className ||"text-black text-base uppercase font-medium" } `}
+            className={` ${className ||"text-black text-base uppercase font-medium hover:text-primary" }  `}
         >
             {title}
         </Link>

@@ -12,7 +12,7 @@ interface Props {
 export const useAuth = ({ allowedRoles, path }: Props) => {
   const router = useRouter();
   const { user, loading } = useUser();
-console.log("your role is ", user?.role,);
+// console.log("your role is ", user?.role,);
 
   useEffect(() => {
     if (loading) return;

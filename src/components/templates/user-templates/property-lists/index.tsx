@@ -16,6 +16,7 @@ import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { IoSearch } from "react-icons/io5";
+import { formatNumberInLakhsOrCrores } from "@/components/atoms/format-change";
 
 export const PropertyListTemplate = () => {
   const resultPerPropertyPage = 6;
@@ -119,7 +120,7 @@ export const PropertyListTemplate = () => {
                                     <Image
                                       key={image._id}
                                       className="rounded lg:h-[290px] h-[490px]  w-full object-cover object-center"
-                                      src={`http://localhost:4000/uploads/${image?.filename}`}
+                                      src={`http://192.168.1.37:4000/uploads/${image?.filename}`}
                                       alt={image.filename}
                                       width={500}
                                       height={20}
@@ -135,8 +136,7 @@ export const PropertyListTemplate = () => {
                                 {home.name}
                               </h3>
                               <h2 className="text-lg text-primary font-semibold title-font">
-                                &#8377;{" "}
-                                <span>{home.price.toLocaleString()}</span>
+                              {formatNumberInLakhsOrCrores(home?.price)}
                               </h2>
                             </div>
                             <p className="leading-relaxed text-md my-3 line-clamp-3 min-h-[78px] text-greyish text-base">
@@ -161,7 +161,7 @@ export const PropertyListTemplate = () => {
                                     <PiBuildings size={22} />
                                   </div>
                                   <p className="leading-relaxed text-sm">
-                                    {home.size} ft<sup>2</sup>
+                                    {home.size} Sq.ft.
                                   </p>
                                 </div>
                                 <div className="flex gap-2 items-center">

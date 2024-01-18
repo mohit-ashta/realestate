@@ -5,8 +5,6 @@ import Tooltip from "@/components/atoms/tooltip";
 import SmallLoader from "@/components/molecules/loader/loader";
 import PageNotFound from "@/components/molecules/page-not-found";
 import Layout from "@/components/organisms/layout";
-import { log } from "console";
-
 import React, { useState } from "react";
 import { BsFillHouseLockFill, BsHouseLock } from "react-icons/bs";
 import { MdOutlineNavigateNext } from "react-icons/md";
@@ -31,7 +29,7 @@ const UserInfoList = () => {
     setUserKeyword(userValue);
   };
   const handleUserDelete = async (user: any) => {
-    console.log("Deleting user:", user._id);
+    // console.log("Deleting user:", user._id);
     try {
       await deleteUser(user._id, {
         onSuccess: () => {
@@ -59,14 +57,11 @@ const UserInfoList = () => {
     );
   }
   const users = data?.userPerPage || [];
-  console.log(users);
   const indexOfLastUser = currentPage * resultPerPage;
   const indexOfFirstUser = indexOfLastUser - resultPerPage;
   const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(data?.userCount / resultPerPage);
-  console.log("resultPerPage", resultPerPage);
-  console.log("users", users);
-
+ 
 
 
 
@@ -86,7 +81,7 @@ const UserInfoList = () => {
             <h1 className="sm:text-3xl text-2xl font-medium title-font text-admin-color flex  justify-between">
               User List
             </h1>
-            <div className="flex items-center lg:mt-0 mt-4 ">
+            <form className="flex items-center lg:mt-0 mt-4 " onSubmit={handleButtonClick}>
             <input
               type="text"
               placeholder="Search by name"
@@ -97,17 +92,17 @@ const UserInfoList = () => {
             <button
               type="submit"
               className="bg-[#313131] px-3 py-2 text-admin-color2"
-              onClick={handleButtonClick}
+          
             >
               Search
             </button>
-            </div>
+            </form>
           </div>
           <div className="overflow-x-scroll scroll-smooth no-scroll ">
             <table className=" table-auto w-full text-white home-lists border border-[#353535] ">
             <tr className="border-b border-b-[#353535] text-admin-color2">
               <th className="text-left px-5 py-4 bg-[#313131] ">
-                Sr. No.
+                Sr. No
               </th>
               <th className="text-left px-5 py-4 bg-[#313131] ">Name</th>
               <th className="text-left px-5 py-4 bg-[#313131] ">

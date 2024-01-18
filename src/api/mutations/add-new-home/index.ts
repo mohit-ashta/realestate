@@ -1,6 +1,6 @@
 import { ErrorResponse, NewHomeProps } from "@/types/types";
 import axios, { AxiosError } from "axios";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 
 const uploadMedia = async (addNewHome: NewHomeProps) => {
@@ -29,7 +29,7 @@ const uploadMedia = async (addNewHome: NewHomeProps) => {
     // 192.168.1.255
     const reqOptions = {
       method: "POST",
-      url: `http://localhost:4000/api/v1/createhome`,
+      url: `http://192.168.1.37:4000/api/v1/createhome`,
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${getToken}`,
@@ -37,7 +37,6 @@ const uploadMedia = async (addNewHome: NewHomeProps) => {
       data: formData,
     };
     const { data } = await axios(reqOptions);
-    toast.success(data.message);
     return data;
   } catch (error) {
     const axiosError = error as AxiosError<ErrorResponse>;
@@ -47,5 +46,13 @@ const uploadMedia = async (addNewHome: NewHomeProps) => {
 };
 
 export const useAddNewProfileHome = () => {
-  return useMutation((addNewHome: NewHomeProps) => uploadMedia(addNewHome));
+  const queryClient = useQueryClient();
+  return useMutation((addNewHome: NewHomeProps) => uploadMedia(addNewHome), {
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success(data.message);
+        queryClient.invalidateQueries({ queryKey: ["listHomes"] });
+      }
+    },
+  });
 };

@@ -24,12 +24,10 @@ import { AiOutlineClose } from "react-icons/ai";
 import Modal from "react-modal";
 import { useGetHomeList } from "@/api/query";
 import { useGetUserInfoList } from "@/api/query/get-user-info";
-import { BsBuildings } from "react-icons/bs";
-import { HiUsers } from "react-icons/hi2";
-import { MdOtherHouses, MdOutlineNavigateNext } from "react-icons/md";
+import { MdOutlineNavigateNext } from "react-icons/md";
 import Image from "next/image";
-import Tooltip from "@/components/atoms/tooltip";
 import { IoSearch } from "react-icons/io5";
+import { formatNumberInLakhsOrCrores } from "@/components/atoms/format-change";
 
 export const NewHome = () => {
   useAuth({
@@ -110,7 +108,7 @@ export const NewHome = () => {
   };
   //    ######## for deleteHome  #######
   const handleDelete = async (home: any) => {
-    console.log("Deleting home:", home._id);
+    // console.log("Deleting home:", home._id);
     try {
       deleteHome(home._id, {
         onSuccess() {
@@ -129,7 +127,7 @@ export const NewHome = () => {
     setSelectedImages([]);
   };
 
-  if (isLoading) {
+  if (isLoading || Loading || deleteLoading || userLoading) {
     return (
       <div>
         <SmallLoader />
@@ -159,7 +157,7 @@ export const NewHome = () => {
 
   // #### all Create home
   const onSubmit = async (data: any) => {
-    console.log("Data received:", data);
+    // console.log("Data received:", data);
     try {
       const year = new Date(data.constructionYear).getFullYear();
 
@@ -168,7 +166,7 @@ export const NewHome = () => {
         constructionYear: year,
         images: selectedImageFiles,
       };
-      console.log("homeData", homeData);
+      // console.log("homeData", homeData);
 
       addNewProducts(homeData);
 
@@ -187,7 +185,7 @@ export const NewHome = () => {
           <h1 className="md:text-3xl text-2xl font-medium title-font text-admin-color">
             Admin Dashboard
           </h1>
-          <Modal 
+          <Modal
             isOpen={show}
             style={customStyles}
             onRequestClose={handleCancelModal}
@@ -480,7 +478,10 @@ export const NewHome = () => {
               </div>
             </div>
           </Modal>
-          <span className="flex items-center order-2   max-w-[290px]  justify-between">
+          <form
+            className="flex items-center order-2   max-w-[290px]  justify-between"
+            onSubmit={handleSearch}
+          >
             <input
               type="text"
               placeholder="Search by name or email"
@@ -488,14 +489,14 @@ export const NewHome = () => {
               onChange={handleInputChange}
               className="md:p-2 max-w-[240px] p-1 border border-[#353535] focus:outline-none  bg-transparent text-white"
             />
-            <span
+            <button
+              type="submit"
               className="md:px-3 md:py-2 px-2 py-[8px] text-admin-color2 cursor-pointer "
-              onClick={handleSearch}
             >
-              <IoSearch size="27"/>
-            </span>
-          </span>
-        
+              <IoSearch size="27" />
+            </button>
+          </form>
+
           <div className="flex justify-end items-center lg:order-3">
             <button
               onClick={() => setShow(true)}
@@ -507,7 +508,7 @@ export const NewHome = () => {
         </div>
         <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1  items-center gap-6 mb-8 text-admin-color2">
           <div className="bg-[#313131]  items-center rounded-xl flex lg:p-2 xl:p-10 p-5 gap-6 justify-between  h-[150px]">
-          <div className="md:max-w-14 max-w-10">
+            <div className="md:max-w-14 max-w-10">
               <Image
                 src="/image/home.png"
                 alt="building"
@@ -539,7 +540,7 @@ export const NewHome = () => {
             </div>
           </div>
           <div className="bg-[#313131]  items-center rounded-xl flex lg:p-2 xl:p-10 p-5 gap-6 justify-between  h-[150px]">
-          <div className="md:max-w-14 max-w-10">
+            <div className="md:max-w-14 max-w-10">
               <Image
                 src="/image/menu.png"
                 alt="building"
@@ -559,70 +560,65 @@ export const NewHome = () => {
           </div>
         ) : (
           <>
-          <div className="overflow-x-scroll scroll-smooth scrollHide">
-            <table className="w-full table-auto  text-white home-lists border border-[#353535] ">
-              <tr className="border-b border-b-[#353535] text-admin-color2">
-           
-                <th className="text-left px-5 py-4 bg-[#313131]">
-                  Sr. No.
-                </th> 
-                <th className="text-left px-5 py-4 bg-[#313131] ">
-                  Name
-                </th>
-                <th className="text-left px-5 py-4 bg-[#313131] ">
-                  Price
-                </th>
-                <th className="text-left px-5 py-4 bg-[#313131] ">
-                  Location
-                </th>
-                <th className="text-center px-5 py-4 bg-[#313131] ">
-                  Actions
-                </th>
-              </tr>
-              {homes &&
-                homes.map((home: any, idx: number) => (
-                  <tr
-                    className="border-b border-b-[#353535] text-admin-color2"
-                    key={home._id}
-                  >
-                    <td className="px-5 py-2 ">{indexOfFirstHome + idx + 1}</td>
-                    <td className="px-5 py-2">{home.name}</td>
-                    <td className="px-5 py-2">
-                      &#8377; <span>{home.price.toLocaleString()}</span>
-                    </td>
-                    <td className="px-5 py-2 " >{home.address}</td>
-                    <td className="px-5 py-2">
-                      <ul className="flex gap-4 justify-center">
-                        <li>
-                          <RiEditLine
-                            onClick={() =>
-                              router.push(
-                                `/admin/home-details/${home._id}/edit`
-                              )
-                            }
-                            className="cursor-pointer"
-                            size={20}
-                            color="#008000"
-                          />
-                        </li>
-                        <li>
-                          <Link href={`home-details/${home._id}`}>
-                            <SlEye size={20} />
-                          </Link>
-                        </li>
-                        <li>
-                          <button
-                            className="cursor-pointer"
-                            onClick={() => handleDelete(home)}
-                          >
-                            <RiDeleteBin6Line size={20} color="#FF0000" />
-                          </button>
-                        </li>
-                      </ul>
-                    </td>
-                  </tr>
-                ))}
-            </table>
+            <div className="overflow-x-scroll scroll-smooth scrollHide">
+              <table className="w-full table-auto  text-white home-lists border border-[#353535] ">
+                <tr className="border-b border-b-[#353535] text-admin-color2">
+                  <th className="text-left px-5 py-4 bg-[#313131]">Sr.No</th>
+                  <th className="text-left px-5 py-4 bg-[#313131] ">Name</th>
+                  <th className="text-left px-5 py-4 bg-[#313131] ">Price</th>
+                  <th className="text-left px-5 py-4 bg-[#313131] ">
+                    Location
+                  </th>
+                  <th className="text-center px-5 py-4 bg-[#313131] ">
+                    Actions
+                  </th>
+                </tr>
+                {homes &&
+                  homes.map((home: any, idx: number) => (
+                    <tr
+                      className="border-b border-b-[#353535] text-admin-color2"
+                      key={home._id}
+                    >
+                      <td className="px-5 py-2 ">
+                        {indexOfFirstHome + idx + 1}
+                      </td>
+                      <td className="px-5 py-2">{home.name}</td>
+                      <td className="px-5 py-2">
+                        {formatNumberInLakhsOrCrores(home?.price)}
+                      </td>
+                      <td className="px-5 py-2 ">{home.address}</td>
+                      <td className="px-5 py-2">
+                        <ul className="flex gap-4 justify-center">
+                          <li>
+                            <RiEditLine
+                              onClick={() =>
+                                router.push(
+                                  `/admin/home-details/${home._id}/edit`
+                                )
+                              }
+                              className="cursor-pointer"
+                              size={20}
+                              color="#008000"
+                            />
+                          </li>
+                          <li>
+                            <Link href={`home-details/${home._id}`}>
+                              <SlEye size={20} />
+                            </Link>
+                          </li>
+                          <li>
+                            <button
+                              className="cursor-pointer"
+                              onClick={() => handleDelete(home)}
+                            >
+                              <RiDeleteBin6Line size={20} color="#FF0000" />
+                            </button>
+                          </li>
+                        </ul>
+                      </td>
+                    </tr>
+                  ))}
+              </table>
             </div>
             <div className="flex items-center justify-end mt-3">
               <button

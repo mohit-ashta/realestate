@@ -1,7 +1,8 @@
 // pages/homes/[property_id].tsx
 
 import { useRouter } from "next/router";
-// Create this hook for fetching a single home's details
+import { VscCalendar } from "react-icons/vsc";
+
 import Layout from "@/components/organisms/layout";
 import { useGetSingleList } from "@/api/query/get-single-list";
 import { useEffect } from "react";
@@ -23,20 +24,23 @@ import "swiper/css";
 import "swiper/css/pagination";
 import PageNotFound from "@/components/molecules/page-not-found";
 import { Navigation, Pagination } from "swiper/modules";
+import { formatDistance } from "date-fns";
+import { formatNumberInLakhsOrCrores } from "@/components/atoms/format-change";
 
 const SinglePropertyListTemplate = () => {
   const router = useRouter();
   const { property_id } = router.query;
 
-  const { isLoading, error, data,refetch } = useGetSingleList(property_id as string);
+  const { isLoading, error, data, refetch } = useGetSingleList(
+    property_id as string
+  );
   useEffect(() => {
-    refetch()
-  }, [property_id])
+    refetch();
+  }, [property_id]);
 
   if (isLoading) {
     return (
       <div>
-        {" "}
         <SmallLoader />
       </div>
     );
@@ -52,9 +56,9 @@ const SinglePropertyListTemplate = () => {
       </div>
     );
   }
-
+ 
   const homeDetails = data?.buyHome; // Adjust this based on your API response structure
-  console.log("homeDetails", homeDetails);
+  // console.log("homeDetails", homeDetails);
 
   return (
     <Layout>
@@ -83,7 +87,7 @@ const SinglePropertyListTemplate = () => {
                         <Image
                           key={image._id}
                           className="rounded object-cover object-center w-full h-[500px]"
-                          src={`http://localhost:4000/uploads/${image?.filename}`}
+                          src={`http://192.168.1.37:4000/uploads/${image?.filename}`}
                           alt={image?.filename}
                           width={500}
                           height={20}
@@ -99,7 +103,7 @@ const SinglePropertyListTemplate = () => {
                     {homeDetails?.name}
                   </h3>
                   <p className="text-primary lg:text-base title-font font-medium min-w-[200px] text-end">
-                    &#8377; {homeDetails?.price.toLocaleString()}
+                  {formatNumberInLakhsOrCrores(homeDetails?.price)}
                   </p>
                 </div>
                 <div className="flex gap-1 items-center mb-4">
@@ -116,7 +120,7 @@ const SinglePropertyListTemplate = () => {
                 <div className="lg:pb-6 ">
                   <h6 className="text-lg py-5 text-black">Property Features</h6>
                   <div className="grid lg:grid-cols-2 grid-cols lg:gap-5">
-                  <div className="flex justify-between items-center border-b border-b-[#dedede] pb-3 lg:pt-0 pt-3">
+                    <div className="flex justify-between items-center border-b border-b-[#dedede] pb-3 lg:pt-0 pt-3">
                       <div className="flex gap-3">
                         <span className="text-sm">
                           <HiOutlineBuildingOffice2 size="20" />
@@ -124,7 +128,7 @@ const SinglePropertyListTemplate = () => {
                         <span className="text-sm">Size </span>
                       </div>
                       <span className="text-end text-sm capitalize">
-                        {homeDetails?.size}
+                        {homeDetails?.size} Sq.ft.
                       </span>
                     </div>
                     <div className="flex justify-between items-center border-b border-b-[#dedede] pb-3 lg:pt-0 pt-3">
@@ -202,6 +206,22 @@ const SinglePropertyListTemplate = () => {
                       </div>
                       <span className="text-end text-sm capitalize">
                         {homeDetails?.furnishing}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center border-b border-b-[#dedede] pb-3 lg:pt-0 pt-3">
+                      <div className="flex gap-3">
+                        <span className="text-sm">
+                          <VscCalendar size="20" />
+                        </span>
+                        <span className="text-sm">Posted</span>
+                      </div>
+                      <span className="text-end text-sm ">
+                      {homeDetails?.createdAt
+                        ? formatDistance(
+                            new Date(homeDetails.createdAt),
+                            new Date() 
+                          )
+                        : "Unknown date"} ago
                       </span>
                     </div>
                   </div>

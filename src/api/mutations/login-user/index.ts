@@ -6,20 +6,14 @@ import { AdminRoutes, UserRoutes } from "@/constants/routes"; // Import your rou
 import { useRouter } from "next/router";
 
 const loginUser = async (loginuser: LoginFormProps) => {
-  // const getToken = localStorage.getItem("token");
   try {
     const response = await axios.post(
-      "http://localhost:4000/api/v1/login",
+      "http://192.168.1.37:4000/api/v1/login",
       loginuser
-      // {
-      //   headers: {
-      //     Authorization: `Bearer ${getToken}`,
-      //   },
-      // }
     );
-    toast.success(response.data.message);
     const token = response.data.token;
     localStorage.setItem("token", token);
+    toast.success(response.data.message);
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<ErrorResponse>;
@@ -31,25 +25,22 @@ const loginUser = async (loginuser: LoginFormProps) => {
 export const useLoginUser = () => {
   const router = useRouter();
 
-  return useMutation(loginUser, {
+  return useMutation(loginUser,  {
     onSuccess: (res) => {
-      console.log("Full Response:", res);
-      console.log("Response data:", res?.user.role);
-      if (res?.success && res?.user) {
-        console.log("Data Object:", res.user);
+      // console.log("Full Response:", res);
+      const { success, user } = res || {};
 
-        const userRole = res?.user?.role;
+      if (success && user) {
+        // console.log("Data Object:", user);
 
-        if (userRole === "admin") {
-          router.push(AdminRoutes?.DASHBOARD.absolutePath);
-        } else if (userRole === "user") {
-          router.push(UserRoutes?.PROPERTYLIST.absolutePath);
-        } else {
-          console.error("Unknown user role:", userRole);
-        }
+        const userRole = user?.role;
+        const route = userRole === "admin" ? AdminRoutes?.DASHBOARD : UserRoutes?.PROPERTYLIST;
+
+        router.push(route.absolutePath);
       } else {
-        // Log an error or handle the case where data or success is missing
-        console.error("Invalid response structure:", res);
+        const errorMessage = res?.message || "Invalid response structure";
+        toast.error(errorMessage);
+        console.error(errorMessage);
       }
     },
   });

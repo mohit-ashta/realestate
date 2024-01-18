@@ -18,10 +18,10 @@ const EditHome = () => {
     const methods = useForm({ resolver: yupResolver(validateSchema) });
     const { mutate: getUpdateHome, isLoading: isUpdatingLoading } =
         useUpdateHome();
-    console.log('home_id', home_id);
+  
 
     const { isLoading: gettingHomeData, data: homeResponse, refetch } = useGetSingleList(home_id as string)
-    console.log('gettingHomeData>>>>>>>>>>>', gettingHomeData);
+ 
 
     const handleBack = () => {
         router.back()
@@ -31,7 +31,6 @@ const EditHome = () => {
         register,
         formState: { errors },
         setValue,
-        watch,
         reset,
     } = methods;
 
@@ -55,37 +54,43 @@ const EditHome = () => {
         setValue("address", homeResponse?.buyHome?.address);
     }, [homeResponse])
 
-    console.log('homeResponse', homeResponse);
+    // console.log('all value set ', homeResponse);
 
-    console.log('errors', errors);
+    // console.log('errors', errors);
 
     const handleUpdate = async (home: any) => {
-        console.log('home', home);
-
+        console.log('<<<<<<<<<<<< home  variable >>>>>>>>>>>', home);
         try {
-            getUpdateHome(
-                {
-                    _id: home_id,
-                    ...home,
-                },
-                {
-                    onSuccess: () => {
-                        router.push(AdminRoutes?.DASHBOARD?.absolutePath)
-                        reset();
-                    },
-                    onError: (error) => {
-                        console.error("Error from getUpdateHome:", error);
-                        toast.error("Update failed. Please check the home details.");
-                    },
-                }
-            );
+          // Check if files are selected
+          if (home?.images && home.images.length > 0) {
+            const updatedHome = {
+              _id: home._id,
+              images: home?.images,
+              ...home, // Include the selected files in the updated home object
+            }
+            await getUpdateHome(updatedHome, {
+              onSuccess: () => {
+                console.log("Update successful!",updatedHome);
+                router.push(AdminRoutes?.DASHBOARD?.absolutePath);
+                reset();
 
+              },
+              onError: (error) => {
+                console.error("Error from getUpdateHome:", error);
+                toast.error("Update failed. Please check the home details.");
+              },
+            });
+          } else {
+            console.warn("No files selected for update. Please select at least one file.");
+            toast.warning("No files selected for update. Please select at least one file.");
+          }
         } catch (error) {
-            console.error("Update failed:", error);
-            toast.error("Update failed. Please try again.");
+          console.error("Update failed:", error);
+          toast.error("Update failed. Please try again.");
         }
-    };
-
+      };
+      
+      
     return (
         <Layout>
             <section>

@@ -15,11 +15,7 @@ export const HeaderMenuList = [
     {
         link: UserRoutes.ABOUT.absolutePath,
         title: "About Us",
-    },
-    {
-        link: UserRoutes.HOME.absolutePath,
-        title: "Contact Us",
-    },
+    }
 ]
 
 export const HeaderMenuListUser = [
@@ -34,11 +30,7 @@ export const HeaderMenuListUser = [
     {
         link: UserRoutes.PROPERTYLIST.absolutePath,
         title: "Properties",
-    },
-    {
-        link: UserRoutes.HOME.absolutePath,
-        title: "Contact Us",
-    },
+    }
 
 ]
 
@@ -58,11 +50,7 @@ export const HeaderMenuListAdmin = [
     {
         link: AdminRoutes.DASHBOARD.absolutePath,
         title: "Dashboard",
-    },
-    {
-        link: UserRoutes.HOME.absolutePath,
-        title: "Contact Us",
-    },
+    }
 ]
 
 export const HeaderMenuTab = [
