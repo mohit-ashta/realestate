@@ -7,7 +7,7 @@ const AddNewUser = async (addUser: SignUpFormProps) => {
 
   try {
     const response = await axios.post(
-      `http://192.168.1.37:4000/api/v1/register`,
+      `http://192.168.100.7:4000/api/v1/register`,
       addUser,
     );
     toast.success(response.data.message);

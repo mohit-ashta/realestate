@@ -28,6 +28,7 @@ import { MdOutlineNavigateNext } from "react-icons/md";
 import Image from "next/image";
 import { IoSearch } from "react-icons/io5";
 import { formatNumberInLakhsOrCrores } from "@/components/atoms/format-change";
+import { CardBox } from "../card-box";
 
 export const NewHome = () => {
   useAuth({
@@ -434,6 +435,7 @@ export const NewHome = () => {
                                       width={100}
                                       height={100}
                                       className="w-16 mb-2 rounded"
+                                      blurDataURL={imageUrl}
                                     />
                                   ))}
                                 </div>
@@ -506,54 +508,10 @@ export const NewHome = () => {
             </button>
           </div>
         </div>
-        <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1  items-center gap-6 mb-8 text-admin-color2">
-          <div className="bg-[#313131]  items-center rounded-xl flex lg:p-2 xl:p-10 p-5 gap-6 justify-between  h-[150px]">
-            <div className="md:max-w-14 max-w-10">
-              <Image
-                src="/image/home.png"
-                alt="building"
-                width={70}
-                height={70}
-              />
-            </div>
-            <div>
-              <div className="lg:text-3xl text-xl pt-3 text-right">
-                {data.homeCount ? data.homeCount : "0"}
-              </div>
-              <div className="lg:text-xl text-md">Available Properties</div>
-            </div>
-          </div>
-          <div className="bg-[#313131]  items-center rounded-xl flex lg:p-2 xl:p-10 p-5 gap-6 justify-between  h-[150px]">
-            <div className="md:max-w-14 max-w-10">
-              <Image
-                src="/image/user.png"
-                alt="building"
-                width={70}
-                height={70}
-              />
-            </div>
-            <div>
-              <div className="lg:text-3xl text-xl pt-3 text-right">
-                {dataUser?.userCount ? dataUser?.userCount : "0"}{" "}
-              </div>
-              <div className="lg:text-xl text-md">Logged In Users</div>
-            </div>
-          </div>
-          <div className="bg-[#313131]  items-center rounded-xl flex lg:p-2 xl:p-10 p-5 gap-6 justify-between  h-[150px]">
-            <div className="md:max-w-14 max-w-10">
-              <Image
-                src="/image/menu.png"
-                alt="building"
-                width={70}
-                height={70}
-              />
-            </div>
-            <div>
-              <div className="lg:text-3xl text-xl pt-3 text-right">0</div>
-              <div className="lg:text-xl text-md">Other Notifications</div>
-            </div>
-          </div>
-        </div>
+        <CardBox
+          datauser={dataUser?.userCount ? dataUser?.userCount : "0"}
+          homeCount={data?.homeCount ? data.homeCount : "0"}
+        />
         {homes.length < 1 ? (
           <div className="grid  grid-cols place-items-center items-center text-admin-color2 h-52">
             There is no Property🥺 , Please Create New Property🏢

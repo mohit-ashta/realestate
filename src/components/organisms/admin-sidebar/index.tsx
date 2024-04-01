@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import { IoIosLogOut } from "react-icons/io";
 import { useUser } from "@/hooks/useAuth";
 import { CommonModal } from "../modal";
-import { FiUser } from "react-icons/fi";
+import { FiUser, FiUsers } from "react-icons/fi";
 import { LoginForm } from "../login-form";
 import { SignUpForm } from "../signup-form";
 export const AdminSidebar = () => {
@@ -75,13 +75,11 @@ export const Sidebar = () => {
   const handleShowLogin = () => {
     setShowLogin(true);
     setShowSignup(false);
- 
   };
 
   const handleShowSignup = () => {
     setShowLogin(false);
     setShowSignup(true);
-
   };
 
   const handleLogout = () => {
@@ -107,7 +105,7 @@ export const Sidebar = () => {
         <HiBars3BottomRight size="32" />
       </button>
 
-      <Drawer open={isOpen} direction="left" >
+      <Drawer open={isOpen} direction="left">
         {isAdminRoute ? (
           <>
             <div className="flex justify-end py-2">
@@ -162,7 +160,6 @@ export const Sidebar = () => {
                 (item: any, idx: number) => (
                   <HeaderMenuItem
                     key={idx}
-                    
                     title={item.title}
                     link={item.link}
                     className={` hover:bg-[#191919] hover:text-white px-4 py-3 text-admin-color2 ${
@@ -186,16 +183,16 @@ export const Sidebar = () => {
                 }`}
               >
                 <span>
-                  <IoIosLogOut size={20}  />
+                  <IoIosLogOut size={20} />
                 </span>
                 Logout
               </button>
             </>
-          ) : ( 
+          ) : (
             <CommonModal
               buttonText="login"
               className="text-admin-color2  flex gap-2"
-              buttonIcon={<FiUser  size={18} />}
+              buttonIcon={<FiUsers size={18} />}
             >
               <div>
                 {showLogin && (

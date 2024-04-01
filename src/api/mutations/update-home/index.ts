@@ -72,7 +72,7 @@ const getUpdateHome = async (updateHome: UpdateHomeProps) => {
     console.log('Images: apiiiiiiiiii', updateHome?.images);
     const reqOptions = {
       method: "PUT",
-      url: `http://192.168.1.37:4000/api/v1/home/update/${updateHome._id}`,
+      url: `http://192.168.100.7:4000/api/v1/home/update/${updateHome._id}`,
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${getToken}`,

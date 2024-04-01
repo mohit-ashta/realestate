@@ -8,7 +8,7 @@ const getSingleList = async (id: any) => {
   try {
     const reqOptions = {
       method: "GET",
-      url: `http://192.168.1.37:4000/api/v1/home/${id}`,
+      url: `http://192.168.100.7:4000/api/v1/home/${id}`,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${getToken}`,

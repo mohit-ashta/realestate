@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 const loginUser = async (loginuser: LoginFormProps) => {
   try {
     const response = await axios.post(
-      "http://192.168.1.37:4000/api/v1/login",
+      "http://192.168.100.7:4000/api/v1/login",
       loginuser
     );
     const token = response.data.token;

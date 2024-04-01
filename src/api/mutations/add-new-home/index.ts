@@ -29,7 +29,7 @@ const uploadMedia = async (addNewHome: NewHomeProps) => {
     // 192.168.1.255
     const reqOptions = {
       method: "POST",
-      url: `http://192.168.1.37:4000/api/v1/createhome`,
+      url: `http://192.168.100.7:4000/api/v1/createhome`,
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${getToken}`,

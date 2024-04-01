@@ -8,7 +8,7 @@ const deleteHome = async (id:any) => {
   try {
     const reqOptions = {
       method: "DELETE", 
-      url: `http://192.168.1.37:4000/api/v1/home/list/${id}`, 
+      url: `http://192.168.100.7:4000/api/v1/home/list/${id}`, 
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${getToken}`,

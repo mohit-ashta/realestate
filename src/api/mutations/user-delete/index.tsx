@@ -8,7 +8,7 @@ const getUserDelete = async (id: any) => {
     const getToken = localStorage.getItem("token");
     const reqOptions = {
       method: "DELETE",
-      url: `http://192.168.1.37:4000/api/v1/admin/user/${id}`,  // Make sure to include the id in the URL
+      url: `http://192.168.100.7:4000/api/v1/admin/user/${id}`,  // Make sure to include the id in the URL
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${getToken}`,
